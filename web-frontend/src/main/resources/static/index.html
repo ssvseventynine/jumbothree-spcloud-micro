@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="DashboardApp">
+<head>
+    <meta charset="UTF-8">
+    <title>JumboThree Enterprise Dashboard</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; margin-top: 0; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; }
+        .tab-btn { padding: 10px 20px; border: none; background: #e9ecef; border-radius: 4px; cursor: pointer; font-weight: bold; color: #495057; transition: all 0.2s; }
+        .tab-btn:hover { background: #ced4da; }
+        .tab-btn.active { background: #007bff; color: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; box-shadow: 0 2px 3px rgba(0,0,0,0.05); }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #dee2e6; }
+        th { background-color: #f8f9fa; color: #495057; font-weight: 600; }
+        tr:hover { background-color: #f1f3f5; }
+        .no-data { text-align: center; color: #6c757d; padding: 20px; font-style: italic; }
+    </style>
+</head>
+<body ng-controller="DashboardController">
+
+<div class="container">
+    <h1>Enterprise Microservice Dashboard</h1>
+    
+    <div class="tabs">
+        <button class="tab-btn" ng-class="{active: activeTab === 'inventory'}" ng-click="setTab('inventory')">Inventory System</button>
+        <button class="tab-btn" ng-class="{active: activeTab === 'orders'}" ng-click="setTab('orders')">Order Book</button>
+        <button class="tab-btn" ng-class="{active: activeTab === 'customers'}" ng-click="setTab('customers')">Client Profiles</button>
+        <button class="tab-btn" ng-class="{active: activeTab === 'billing'}" ng-click="setTab('billing')">Ledger Ledger</button>
+    </div>
+
+    <div ng-if="activeTab === 'inventory'">
+        <h3>Live Product Inventory Stock (Port 8081 via Gateway)</h3>
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Item Code</th><th>Stock Available</th></tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in inventoryData">
+                    <td>{{item.id}}</td><td>{{item.itemCode}}</td><td>{{item.stockLevel}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+<div ng-if="activeTab === 'orders'">
+        <h3>Live Orders Processing Ledger (Port 8082 via Gateway)</h3>
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Order Reference</th><th>Total Invoice Cost</th></tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="order in ordersData">
+                    <td>{{order.id}}</td><td>{{order.orderId}}</td><td>${{order.totalAmount | number:2}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top: 30px; color: #28a745;">
+            Inventory Stock Levels Retrieved BY Order Service (Feign Backchannel)
+        </h3>
+        <p style="font-style: italic; color: #6c757d;">
+            The table below is being rendered inside the Orders tab, but the data is being fetched from the Inventory database via a direct microservice-to-microservice link!
+        </p>
+        <table>
+            <thead>
+                <tr style="background-color: #e8f5e9;"><th>Item Code</th><th>Live Stock Checked Behind Scenes</th></tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="stock in backchannelStock">
+                    <td>{{stock.itemCode}}</td>
+                    <td>
+                        <span style="background: #28a745; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.9em;">
+                            {{stock.stockLevel}} units
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div ng-if="activeTab === 'customers'">
+        <h3>Live Profile Directories (Port 8083 via Gateway)</h3>
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Customer ID</th><th>Full Name</th><th>Email Identity</th></tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="cust in customersData">
+                    <td>{{cust.id}}</td><td>{{cust.customerId}}</td><td>{{cust.name}}</td><td>{{cust.email}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div ng-if="activeTab === 'billing'">
+        <h3>Live Billing Accounts (Port 8084 via Gateway)</h3>
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Invoice Number</th><th>Charged Amount</th><th>Payment State</th></tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="bill in billingData">
+                    <td>{{bill.id}}</td><td>{{bill.invoiceNumber}}</td><td>${{bill.amount | number:2}}</td><td><strong>{{bill.status}}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+  // Only try to fetch the Azure environment file if we are NOT on localhost
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      document.write('<script src="env.js"><\/script>');
+  }
+</script>
+
+<script src="app.js"></script>
+</body>
+</html>

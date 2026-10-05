@@ -1,0 +1,6 @@
+com\sidhant\jumbothree\order\OrderServiceApplication.class
+com\sidhant\jumbothree\order\controller\OrderController.class
+com\sidhant\jumbothree\order\client\InventoryClient.class
+com\sidhant\jumbothree\order\model\InventoryDTO.class
+com\sidhant\jumbothree\order\model\Order.class
+com\sidhant\jumbothree\order\repository\OrderRepository.class

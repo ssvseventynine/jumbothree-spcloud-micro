@@ -1,0 +1,4 @@
+com\sidhant\jumbothree\inventory\repository\InventoryRepository.class
+com\sidhant\jumbothree\inventory\InventoryServiceApplication.class
+com\sidhant\jumbothree\inventory\controller\InventoryController.class
+com\sidhant\jumbothree\inventory\model\Inventory.class
